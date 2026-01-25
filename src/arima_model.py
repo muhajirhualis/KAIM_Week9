@@ -34,3 +34,4 @@ class ARIMAForecaster:
         print(f"  RMSE: ${rmse:.2f}")
         print(f"  MAPE: {mape:.2f}%")
         return {"MAE": mae, "RMSE": rmse, "MAPE": mape}
+
