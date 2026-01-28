@@ -124,5 +124,5 @@ portfolio-optimization/
 - [ ] Implement **portfolio optimization** (Efficient Frontier, Max Sharpe, Min Volatility)  
 - [ ] **Backtest** strategy vs 60% SPY / 40% BND benchmark  
 
----
+
 
