@@ -80,3 +80,27 @@ class LSTMForecaster:
         print(f"  RMSE: ${rmse:.2f}")
         print(f"  MAPE: {mape:.2f}%")
         return {"MAE": mae, "RMSE": rmse, "MAPE": mape}
+    
+
+    def forecast_future(self, steps=252):
+        # Use the last WINDOW_SIZE actual returns to start
+        last_window = self.returns_train.values[-self.window_size:]
+        last_window_scaled = self.scaler.transform(last_window.reshape(-1, 1))
+        
+        future_returns = []
+        current_input = last_window_scaled.copy()
+
+        for _ in range(steps):
+            # Predict next return (scaled)
+            pred_scaled = self.model.predict(current_input.reshape(1, self.window_size, 1), verbose=0)
+            pred_unscaled = self.scaler.inverse_transform(pred_scaled)[0, 0]
+            future_returns.append(pred_unscaled)
+
+            # Update input window: remove first, append new UNSCALED return → THEN rescale entire window
+            # BUT: scaler was fit on training data; we cannot refit. So approximate:
+            # Instead, keep everything in scaled space by transforming the new unscaled value
+            new_scaled = self.scaler.transform([[pred_unscaled]])[0, 0]
+            current_input = np.roll(current_input, -1)
+            current_input[-1] = new_scaled
+
+        return np.array(future_returns)
